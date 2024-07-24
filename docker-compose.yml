@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-data:
+    driver: local
+  app-vendor:
+    driver: local
+  app-node-modules:
+    driver: local
+  dbdata:
+    driver: local
+
+services:
+  app:
+    build:
+      context: /home/danesh1/laravel-docker
+      dockerfile: Dockerfile
+    container_name: my-laravel-app
+    image: laravel-app
+    networks:
+      - app-network
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    volumes:
+      - /home/danesh1/laravel-docker:/var/www/laravel3
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+
+  db:
+    container_name: my-mysql-db
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: danesh1
+    image: mysql:8.0.37
+    networks:
+      - app-network
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    volumes:
+      - dbdata:/var/lib/mysql
